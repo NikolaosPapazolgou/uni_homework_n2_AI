@@ -5,7 +5,7 @@ import utils
 
 
 def main():
-    start = time.time()  #Start Time.
+    start = time.time()  # Start Time.
     os.system('cls' if os.name == 'nt' else 'clear')  # Clear Terminal
     correct_number_input = False
     print(sys.argv)
@@ -28,13 +28,15 @@ def main():
     print(f"DATA: {data}")
     # Process the data list into an initial_state list
     initial_state = utils.get_initial_state(data)
-    print(f"Number of symbols (N):{initial_state['number'][0]}")
-    print(f"Number of divorces (M):{initial_state['number'][1]}")
-    print(f"Number of terms (K):{initial_state['number'][2]}")
-    print(f"INITIAL STATE: {initial_state['initial_state']}")
-    print(f"RESULT: {initial_state['divorce_result']}")
-    print(f"Symbols: {initial_state['symbols']}")
-
-
+    if utils.goal_state(initial_state):
+        print(f"Solution is :{initial_state["symbols"]}")
+    else:
+        print(f"Solution not found: {initial_state["symbols"]}")
+    possible_states = utils.possible_states(current_state=initial_state)
+    print(f"CURRENT STATE: symbols {initial_state["symbols"]} and {initial_state["divorce_result"]} ")
+    for state_number, state in enumerate(possible_states):
+        estimated_value = utils.heuristic_function(state)
+        print(f"POSSIBLE NEIGHBOR STATES: STATE NUMBER {state_number + 1} SYMBOLS:{state["symbols"]} {state["divorce_result"]}")
+        print(f"Estimated value(Number of true accuring in the divorce_result list) : {estimated_value} ")
 if __name__ == '__main__':
     main()
