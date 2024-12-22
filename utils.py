@@ -1,3 +1,6 @@
+import copy
+
+
 def read_file(file_name):
     data = []
     with open(file_name, 'r') as file:
@@ -40,13 +43,84 @@ def get_initial_state(data):
 
 
 # INPUTS: The dictionary that contains (1) Symbols list (2) Divorces Propositions
-def update_result_list():
-    # PROCESS:
-    # STEP (1): Iterate by each divorce-proposition
-    # STEP (2): Access the corresponding element of the ith divorce-proposition
-    # STEP (3): Find the ith element in the symbols list and return each value
-    # STEP (4): If the ith element has a negative value then return the opposite value
-    # of the corresponding element in the symbols list.
-    # STEP (5): Before you access a new divorce-proposition add the resulting boolean value (that was extracted
-    # via the process above) to the ith corresponding element of the divorce_result list in the state dictionary.
-    return None
+# GOAL: Synchronizes the values of the divorce_result of a new propositional_symbols values corresponding
+# to divorce_propositions
+def update_result_list(current_state):
+    """
+    Synchronizes the values of `divorce_result` in `current_state`
+    based on `symbols` and `divorces_state`.
+    """
+    symbols = current_state["symbols"]
+    divorces_state = current_state["initial_state"]  # Assuming it's a list of divorce propositions
+
+    # Ensure `divorce_result` is initialized to the correct size
+    if "divorce_result" not in current_state or not isinstance(current_state["divorce_result"], list):
+        current_state["divorce_result"] = [False] * len(divorces_state)
+
+    # Process each divorce proposition
+    for divorce_index, divorce_proposition in enumerate(divorces_state):
+        boolean_result = True  # Initialize for each proposition
+
+        for number in divorce_proposition:
+            # Get the value of the corresponding symbol
+            current_boolean_value = symbols[abs(number) - 1]
+
+            # If the number is negative, invert the symbol's value
+            if number < 0:
+                current_boolean_value = not current_boolean_value
+
+            # Apply AND logic
+            boolean_result = boolean_result and current_boolean_value
+
+            # Short-circuit evaluation for efficiency
+            if not boolean_result:
+                break
+
+        # Update the divorce_result for this proposition
+        current_state["divorce_result"][divorce_index] = boolean_result
+    return current_state["divorce_result"]
+
+
+def goal_state(current_state):
+    if False in current_state["divorce_result"]:
+        return False
+    else:
+        return True
+
+
+def possible_states(current_state):
+    neighbor_states = []  # List of all possible states (dictionaries of states)
+    # STEP (1): Iterate through each symbol element and change its value.
+    # STEP (2): Create and Save the new list of symbols to a "copy" list.
+    # STEP (3): Call the result update_result_list function to synchronize the new symbol list and divorce_propositions
+    # with the corresponding divorce_result list
+    # STEP (4): Create a new dictionary that is consisted of the modified list
+    symbols = []
+    state_list = []
+    for symbol_index, symbol_value in enumerate(current_state["symbols"]):
+        # STEP (1): Create a shallow copy of the symbols list
+        copy_symbols = copy.copy(current_state["symbols"])
+        # STEP (2): Modify the copy by toggling the current symbol
+        copy_symbols[symbol_index] = not symbol_value
+        # STEP (3): Create a new state with the modified symbols
+        state = {
+            "number": current_state["number"],
+            "symbols": copy_symbols,
+            "divorce_result": current_state["divorce_result"][:],
+            "initial_state": current_state["initial_state"]
+        }
+
+        # STEP (4): Update the result and append to neighbor_states
+        state["divorce_result"] = update_result_list(state)
+        # print(f"State {state}")
+        neighbor_states.append(state)
+    return neighbor_states
+
+
+def heuristic_function(state):
+    count_false = 0
+    for divorce_result in state["divorce_result"]:
+        if divorce_result:
+            count_false += 1
+
+    return count_false
