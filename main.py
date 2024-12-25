@@ -2,6 +2,8 @@ import time
 import sys
 import os
 import utils
+import hill_climbing as hc
+import depth_first as dp
 
 
 def main():
@@ -24,19 +26,34 @@ def main():
                                 b"<outputfile> is the name of the output file with the solution")
         sys.exit()
     # Loads the problem. (Reads the input file and returns the content in a list format.)
-    data = utils.read_file(input_file)
-    print(f"DATA: {data}")
-    # Process the data list into an initial_state list
+    # data = utils.read_file(input_file)
+    # print(f"DATA: {data}")
+    # # Process the data list into an initial_state list
+    # initial_state = utils.get_initial_state(data)
+    # if utils.goal_state(initial_state):
+    #     print(f"Solution is :{initial_state["symbols"]}")
+    # else:
+    #     print(f"Solution not found: {initial_state["symbols"]}")
+    # possible_states = utils.possible_states(current_state=initial_state)
+    # print(f"CURRENT STATE: symbols {initial_state["symbols"]} and {initial_state["divorce_result"]} ")
+    # for state_number, state in enumerate(possible_states):
+    #     estimated_value = utils.heuristic_function(state)
+    #     print(
+    #         f"POSSIBLE NEIGHBOR STATES: STATE NUMBER {state_number + 1} SYMBOLS:{state["symbols"]} {state["divorce_result"]}")
+    #     print(f"Estimated value(Number of true accuring in the divorce_result list) : {estimated_value} ")
+    data = utils.read_file('input-file')
     initial_state = utils.get_initial_state(data)
-    if utils.goal_state(initial_state):
-        print(f"Solution is :{initial_state["symbols"]}")
-    else:
-        print(f"Solution not found: {initial_state["symbols"]}")
-    possible_states = utils.possible_states(current_state=initial_state)
-    print(f"CURRENT STATE: symbols {initial_state["symbols"]} and {initial_state["divorce_result"]} ")
-    for state_number, state in enumerate(possible_states):
-        estimated_value = utils.heuristic_function(state)
-        print(f"POSSIBLE NEIGHBOR STATES: STATE NUMBER {state_number + 1} SYMBOLS:{state["symbols"]} {state["divorce_result"]}")
-        print(f"Estimated value(Number of true accuring in the divorce_result list) : {estimated_value} ")
+
+    # Run Hill Climbing
+    if method.lower() == 'hill':
+        final_state, steps, restarts, time_executed, = hc.hill_climbing_with_exploration(initial_state)
+        print("Final state: ", final_state)
+        print("Execution time: ", time_executed)
+    elif method.lower() == 'depth':
+        final_state, steps, time_executed, = dp.depth_first_search(initial_state)
+        print("Final state: ", final_state)
+        print("Execution Time: ", time_executed)
+
+
 if __name__ == '__main__':
     main()

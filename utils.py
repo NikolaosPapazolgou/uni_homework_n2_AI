@@ -1,4 +1,5 @@
 import copy
+import random
 
 
 def read_file(file_name):
@@ -8,6 +9,24 @@ def read_file(file_name):
         for line in raw_data:
             data.append(line.strip('\n'))
     return data
+
+
+def random_initialize_symbols(state):
+    """
+    Randomly initializes the 'symbols' list in the state to boolean values (True or False).
+
+    Parameters:
+    - state: The state dictionary containing the 'symbols' list to be initialized.
+
+    Returns:
+    - state: The updated state with the 'symbols' list randomly initialized.
+    """
+    # Randomly initialize the 'symbols' list with True or False for each element
+    print(f"STATE BEFORE: {state}")
+    state["symbols"] = [random.choice([True, False]) for _ in state["symbols"]]
+    update_result_list(state)
+    print(f"State AFTER: {state}")
+    return state
 
 
 def get_initial_state(data):
@@ -70,7 +89,7 @@ def update_result_list(current_state):
                 current_boolean_value = not current_boolean_value
 
             # Apply AND logic
-            boolean_result = boolean_result and current_boolean_value
+            boolean_result = boolean_result or current_boolean_value
 
             # Short-circuit evaluation for efficiency
             if not boolean_result:
@@ -82,10 +101,7 @@ def update_result_list(current_state):
 
 
 def goal_state(current_state):
-    if False in current_state["divorce_result"]:
-        return False
-    else:
-        return True
+    return all(current_state["divorce_result"])
 
 
 def possible_states(current_state):
@@ -118,9 +134,9 @@ def possible_states(current_state):
 
 
 def heuristic_function(state):
-    count_false = 0
+    count_true = 0
     for divorce_result in state["divorce_result"]:
         if divorce_result:
-            count_false += 1
-
-    return count_false
+            count_true += 1
+    # print(f"Heuristic value for state {state}: {count_true}")  # Debug print
+    return count_true
