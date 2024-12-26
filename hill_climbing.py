@@ -6,6 +6,8 @@ import random
 def state_to_tuple(state):
     """
     Converts a state into a tuple that can be added to a set for comparison.
+    This function is essential for ensuring that states can be uniquely identified
+    and checked for duplicates when traversing or exploring potential solutions.
     For example, we convert the 'symbols' list and 'divorce_result' to a tuple.
     """
     return tuple(state["symbols"]), tuple(state["divorce_result"])
@@ -32,7 +34,6 @@ def hill_climbing_with_exploration(initial_state, max_restarts=50, exploration_f
         best_heuristic = utils.heuristic_function(current_state)
 
         for neighbor in neighbor_states:
-            print(f"NEIGHBOOR STATE: {neighbor}")
             neighbor_tuple = state_to_tuple(neighbor)
 
             if neighbor_tuple in visited_states:
@@ -43,7 +44,6 @@ def hill_climbing_with_exploration(initial_state, max_restarts=50, exploration_f
             if h > best_heuristic:
                 best_heuristic = h
                 best_state = neighbor
-        print(f"BEST STATE: {best_state} \n ESTIMATED VALUE: {best_heuristic}")
         # If no improvement is made, we restart with some exploration
         if best_state["symbols"] == current_state["symbols"]:
             restarts += 1
@@ -81,3 +81,12 @@ def hill_climbing_with_exploration(initial_state, max_restarts=50, exploration_f
 
     print(f"Steps taken: {steps}, Restarts: {restarts}")
     return current_state, steps, restarts, time.time() - start_time
+
+
+"""
+    Returns:
+        current_state (dict): The final state reached by the algorithm.
+        steps (int): The total number of steps taken to reach the result.
+        restarts (int): The number of times the algorithm restarted due to lack of progress.
+        elapsed_time (float): The time elapsed during the algorithm execution.
+"""

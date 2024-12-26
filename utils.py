@@ -38,7 +38,7 @@ def get_initial_state(data):
     temp_state = [int(char_num) for index, line_string in enumerate(data) for char_num in line_string.split() if
                   index != 0]
     # Initialize symbols list with True values.
-    symbols = [True for i in range(number_symbols_divorces_terms[0])]
+    symbols = [random.choice([True, False]) for _ in range(number_symbols_divorces_terms[0])]
 
     for index, symbol_number in enumerate(temp_state):
         temp_list.append(symbol_number)
@@ -101,16 +101,11 @@ def update_result_list(current_state):
 
 
 def goal_state(current_state):
-    return all(current_state["divorce_result"])
+    return all(current_state["divorce_result"])  # If all divorce propositions are satisfied returns true else false.
 
 
 def possible_states(current_state):
     neighbor_states = []  # List of all possible states (dictionaries of states)
-    # STEP (1): Iterate through each symbol element and change its value.
-    # STEP (2): Create and Save the new list of symbols to a "copy" list.
-    # STEP (3): Call the result update_result_list function to synchronize the new symbol list and divorce_propositions
-    # with the corresponding divorce_result list
-    # STEP (4): Create a new dictionary that is consisted of the modified list
     symbols = []
     state_list = []
     for symbol_index, symbol_value in enumerate(current_state["symbols"]):
@@ -134,9 +129,18 @@ def possible_states(current_state):
 
 
 def heuristic_function(state):
-    count_true = 0
-    for divorce_result in state["divorce_result"]:
+    count_true = 0  # Counter of true divorce propositions.
+    for divorce_result in state["divorce_result"]:  # Checks what boolean result each divorce proposition returns.
         if divorce_result:
             count_true += 1
-    # print(f"Heuristic value for state {state}: {count_true}")  # Debug print
     return count_true
+
+
+def print_results(final_state, time_executed):
+    print("Final state: ")  # Output the final state reached by the algorithm.
+    print(f"Symbols : {final_state["symbols"]}")
+    print(f"Divorce results: {final_state["divorce_result"]}")
+    print("Execution time: ", time_executed)  # Output the total execution time.
+    print(f"M(Number of Divorce propositions): {final_state["number"][1]}")
+    print(f"N(Number of propositional Symbols): {final_state["number"][0]}")
+    print(f"K(Number of terms per proposition): {final_state["number"][2]}")

@@ -40,6 +40,7 @@ def depth_first_search(initial_state, time_limit=20):
         # Check if the current state is the goal state
         if utils.goal_state(current_state):
             print("Goal state reached!")
+            print(f"Steps taken: {steps}")
             return current_state, steps, time.time() - start_time
 
         # Mark the state as visited
